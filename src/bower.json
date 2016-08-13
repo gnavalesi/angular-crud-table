@@ -1,0 +1,12 @@
+{
+  "name": "angular-crud-table",
+  "description": "",
+  "main": "index.js",
+  "license": "ISC",
+  "homepage": "",
+  "private": true,
+  "dependencies": {
+    "angular": "^1.5.8",
+    "angular-material": "^1.0.9"
+  }
+}

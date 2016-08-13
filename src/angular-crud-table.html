@@ -1,13 +1,65 @@
 <div layout="column">
-
     {{ message }}
 </div>
-<table>
-    <thead>
-        <tr>
-            <th ng-repeat="column in columns">
-                {{ column.name }}
+<table class="angular-table table table-hover">
+    <thead class="angular-table-header">
+        <tr class="angular-table-header-labels angular-table-row">
+            <th class="angular-table-cell"
+                ng-repeat="column in columns">
+                <div ng-class="{ sortable : column.sortable !== false }"
+                     ng-click="sort(column)">
+                    <div class="angular-table-header-label-name">
+                        <span>{{ column.name }}</span>
+                    </div>
+                    <div class="angular-table-header-label-sorter"
+                         ng-if="column.id === sortBy.id">
+                        <i class="material-icons"
+                           ng-if="sortBy.direction">keyboard_arrow_up</i>
+                        <i class="material-icons"
+                           ng-if="!sortBy.direction">keyboard_arrow_down</i>
+                    </div>
+                </div>
             </th>
+            <td class="angular-table-cell angular-table-header-actions">
+
+            </td>
+        </tr>
+        <tr class="angular-table-header-filters angular-table-row">
+            <td class="angular-table-cell"
+                ng-repeat="column in columns"
+                ng-switch="column.filter">
+                <div ng-switch-when="string">
+                    <input type="text"
+                           ng-model="filters[column.id]" />
+                </div>
+                <div ng-switch-default>
+                    {{ column.filter }}
+                </div>
+            </td>
         </tr>
     </thead>
+    <tbody class="angular-table-body">
+        <tr class="angular-table-row"
+            ng-repeat="object in filtered = (objects | filter:filters)"
+            ng-if="shouldShowObject($index)">
+            <td class="angular-table-cell"
+                ng-repeat="column in columns">
+                {{ object[column.id] }}
+            </td>
+        </tr>
+    </tbody>
+    <tfoot class="angular-table-footer">
+        <tr class="angular-table-row">
+            <td class="angular-table-cell" colspan="{{ columns.length + 1 }}">
+                Page <input type="number" min="1" max="{{ page.total }}" ng-model="page.current"/> of {{ page.total }} <br/>
+                Show
+                <select ng-model="page.objectPerPage"
+                        ng-change="calculateTotal()">
+                    <option value="10" selected>10</option>
+                    <option value="20">20</option>
+                    <option value="50">50</option>
+                </select>
+            </td>
+        </tr>
+    </tfoot>
 </table>
