@@ -1,6 +1,7 @@
 var gulp = require('gulp');
 var gulpSeq = require('gulp-sequence');
 var jshint = require('gulp-jshint');
+var sass = require('gulp-sass');
 var zip = require('gulp-zip');
 var concat = require('gulp-concat');
 var gls = require('gulp-live-server');
@@ -33,7 +34,7 @@ gulp.task('dist', ['build'], function () {
  * Development tasks
  */
 gulp.task('watch', function () {
-	gulp.watch(['./src/**/*.*'], function (event) {
+	gulp.watch(['./src/**/*.*', '!./src/**/*.scss'], function (event) {
 		var base = './src/';
 		var task = gulp.src(event.path, {base: base})
 			.pipe(gulp.dest('./build/bower_components/angular-crud-table'));
@@ -50,6 +51,8 @@ gulp.task('watch', function () {
 	});
 
 	gulp.watch(['./server/app.js', './server/js/angular/**/*.js'], ['reload-angular']);
+
+	gulp.watch(['./src/**/*.scss'], ['sass']);
 });
 
 gulp.task('reload-angular', function (cb) {
@@ -59,7 +62,7 @@ gulp.task('reload-angular', function (cb) {
 /**
  * Build tasks
  */
-gulp.task('build', gulpSeq('clean', 'jshint', ['copy-site', 'copy-angular-crud-table', 'join-angular']));
+gulp.task('build', gulpSeq('clean', 'jshint', ['copy-site', 'copy-angular-crud-table', 'join-angular', 'sass']));
 
 gulp.task('clean', function () {
 	return gulp.src('./build', {read: false})
@@ -67,7 +70,7 @@ gulp.task('clean', function () {
 });
 
 gulp.task('copy-angular-crud-table', function() {
-	var source = './src/**.*';
+	var source = './src/**/**.*';
 	var base = './src/';
 
 	return gulp.src(source, {base: base})
@@ -89,6 +92,17 @@ gulp.task('join-angular', function () {
 	var task = gulp.src(source, {base: base})
 		.pipe(concat('app.js'))
 		.pipe(gulp.dest('./build'));
+
+	return taskNotifyServer(task);
+});
+
+gulp.task('sass', function() {
+	var source = ['./src/**/*.scss'];
+	var base = './src';
+
+	var task = gulp.src(source, {base: base})
+		.pipe(sass().on('error', sass.logError))
+		.pipe(gulp.dest('./build/bower_components/angular-crud-table'));
 
 	return taskNotifyServer(task);
 });
