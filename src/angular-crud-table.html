@@ -1,30 +1,43 @@
 <div layout="column">
     {{ message }}
 </div>
+<div class="angular-table-controllers">
+    <div style="flex: 1;"></div>
+    <div class="form-group">
+        <input id="angular-table-controllers-showFilters" type="checkbox"
+               ng-model="controllers.showFilters" />
+        <label for="angular-table-controllers-showFilters">Show filters</label>
+    </div>
+</div>
 <table class="angular-table table table-hover">
     <thead class="angular-table-header">
         <tr class="angular-table-header-labels angular-table-row">
             <th class="angular-table-cell"
                 ng-repeat="column in columns">
                 <div ng-class="{ sortable : column.sortable !== false }"
-                     ng-click="sort(column)">
+                     ng-click="changeOrder(column)">
                     <div class="angular-table-header-label-name">
                         <span>{{ column.name }}</span>
                     </div>
                     <div class="angular-table-header-label-sorter"
-                         ng-if="column.id === sortBy.id">
+                         ng-if="column.id === orderBy.id">
                         <i class="material-icons"
-                           ng-if="sortBy.direction">keyboard_arrow_up</i>
+                           ng-if="orderBy.reverse">keyboard_arrow_up</i>
                         <i class="material-icons"
-                           ng-if="!sortBy.direction">keyboard_arrow_down</i>
+                           ng-if="!orderBy.reverse">keyboard_arrow_down</i>
                     </div>
                 </div>
             </th>
-            <td class="angular-table-cell angular-table-header-actions">
-
-            </td>
+            <th class="angular-table-cell angular-table-header-actions">
+                <div>
+                    <div class="angular-table-header-label-name">
+                        <span>Actions</span>
+                    </div>
+                </div>
+            </th>
         </tr>
-        <tr class="angular-table-header-filters angular-table-row">
+        <tr class="angular-table-header-filters angular-table-row"
+            ng-if="controllers.showFilters">
             <td class="angular-table-cell"
                 ng-repeat="column in columns"
                 ng-switch="column.filter">
@@ -36,16 +49,18 @@
                     {{ column.filter }}
                 </div>
             </td>
+            <td class="angular-table-cell"></td>
         </tr>
     </thead>
     <tbody class="angular-table-body">
         <tr class="angular-table-row"
-            ng-repeat="object in filtered = (objects | filter:filters)"
-            ng-if="shouldShowObject($index)">
+            ng-repeat="object in shownObjects = (objects | filter : filters | orderBy : order : orderBy.reverse)"
+            ng-if="inCurrentPage($index)">
             <td class="angular-table-cell"
                 ng-repeat="column in columns">
                 {{ object[column.id] }}
             </td>
+            <td class="angular-table-cell"></td>
         </tr>
     </tbody>
     <tfoot class="angular-table-footer">
@@ -53,8 +68,7 @@
             <td class="angular-table-cell" colspan="{{ columns.length + 1 }}">
                 Page <input type="number" min="1" max="{{ page.total }}" ng-model="page.current"/> of {{ page.total }} <br/>
                 Show
-                <select ng-model="page.objectPerPage"
-                        ng-change="calculateTotal()">
+                <select ng-model="page.objectsPerPage">
                     <option value="10" selected>10</option>
                     <option value="20">20</option>
                     <option value="50">50</option>

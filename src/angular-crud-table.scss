@@ -1,15 +1,27 @@
+.angular-table-controllers {
+	width: 100%;
+	max-width: 100%;
+
+	display: flex;
+}
+
 .angular-table {
 	.angular-table-header {
 		.angular-table-header-labels {
-			& > .angular-table-cell > div {
-				display: flex;
+			background-color: dodgerblue;
+			color: white;
 
-				& > .angular-table-header-label-name {
-					flex: 1;
-				}
+			& > .angular-table-cell {
+				& > div {
+					display: flex;
 
-				& > .angular-table-header-label-sorter {
+					& > .angular-table-header-label-name {
+						flex: 1;
+					}
 
+					& > .angular-table-header-label-sorter {
+
+					}
 				}
 			}
 		}
@@ -48,7 +60,7 @@
 	}
 
 	&-cell {
-		border: 1px solid grey;
+
 	}
 }
 
